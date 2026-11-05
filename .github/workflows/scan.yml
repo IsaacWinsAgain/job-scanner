@@ -1,0 +1,45 @@
+name: Scan job boards
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes (GitHub may delay scheduled runs at busy times)
+  workflow_dispatch:          # lets you run it by hand from the Actions tab
+
+# Never run two scans at once; they would fight over the saved state.
+concurrency:
+  group: job-scanner
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The scanner's memory of which jobs it has already seen.
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: scanner-state-${{ github.run_id }}
+          restore-keys: scanner-state-
+
+      - name: Scan
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python -m scanner.main
+
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: scanner-state-${{ github.run_id }}
