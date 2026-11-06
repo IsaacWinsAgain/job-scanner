@@ -1,15 +1,8 @@
 {
   "role_types": {
     "internship": [
-      "intern",
-      "internship",
-      "interns",
-      "co-?op",
-      "summer",
-      "student",
-      "undergraduate",
-      "fellowship",
-      "apprentice(ship)?"
+      "intern(ship)?s?\\b.*\\b(part[ -]?time|spring|winter)",
+      "(part[ -]?time|spring|winter)\\b.*\\bintern(ship)?s?"
     ],
     "full_time": [
       "new[ -]?grad",
@@ -22,11 +15,12 @@
       "entry[ -]level",
       "junior",
       "jr",
-      "graduate",
+      "graduate program",
       "class of 2027",
-      "2027",
+      "2027 (start|grad(uate)?|new grad)",
       "rotational",
       "residency",
+      "apprentice(ship)?",
       "associate (software|engineer|developer|security|data|cloud|systems|it)",
       "(engineer|developer|analyst|scientist|programmer|specialist) (i|1)",
       "level (i|1)"
@@ -82,7 +76,10 @@
     "phd",
     "ph\\.d",
     "mba",
-    "postdoc"
+    "postdoc",
+    "summer",
+    "fall",
+    "co-?op"
   ],
   "locations": [
     "United States",
