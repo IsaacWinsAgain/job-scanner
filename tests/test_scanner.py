@@ -13,6 +13,7 @@ from scanner.filters import JobFilter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 with open(os.path.join(ROOT, "config.json"), encoding="utf-8") as f:
     CONFIG = json.load(f)
+CONFIG["locations"] = []  # filter tests check titles; test_location_filter sets its own locations
 
 NOW = datetime.now(timezone.utc)
 RECENT = (NOW - timedelta(hours=1)).isoformat()
@@ -239,6 +240,14 @@ class EndToEndTests(unittest.TestCase):
             pub.reset_mock()
             self.assertEqual(main.main(args), 0)  # nothing new: no notification
             pub.assert_not_called()
+
+
+class WorkdayDateTests(unittest.TestCase):
+    def test_old_workday_jobs_are_skipped(self):
+        self.assertFalse(main.is_recent({"posted": sources.workday_posted("Posted 30+ Days Ago")}, 7))
+        self.assertTrue(main.is_recent({"posted": sources.workday_posted("Posted Today")}, 7))
+        self.assertTrue(main.is_recent({"posted": sources.workday_posted("Posted 3 Days Ago")}, 7))
+        self.assertIsNone(sources.workday_posted(None))
 
 
 if __name__ == "__main__":
